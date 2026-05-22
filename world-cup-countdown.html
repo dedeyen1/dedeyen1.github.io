@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="2026 FIFA 世界杯倒计时 — 赛程、国旗、实时倒计时" />
+  <title>2026 世界杯倒计时</title>
+  <style>
+    :root {
+      --green: #00a651;
+      --green-dark: #008c44;
+      --gold: #ffd700;
+      --red: #ce1126;
+      --blue: #003087;
+      --bg: #0b1a0f;
+      --bg2: #142818;
+      --card: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #f5f5f5;
+      --muted: #9cb89e;
+      --radius: 16px;
+      --ease: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* 足球场纹理背景 */
+    .pitch-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 100% 60% at 50% 0%, rgba(0, 166, 81, 0.25), transparent 60%),
+        linear-gradient(180deg, #0d2212 0%, var(--bg) 40%, #061008 100%);
+    }
+
+    .pitch-lines {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.08;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(255,255,255,0.5) 49px, rgba(255,255,255,0.5) 50px),
+        repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(255,255,255,0.5) 49px, rgba(255,255,255,0.5) 50px);
+      background-size: 50px 50px;
+    }
+
+    .confetti-flag {
+      position: fixed;
+      font-size: 2rem;
+      opacity: 0.15;
+      animation: drift 20s linear infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes drift {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.15; }
+      90% { opacity: 0.15; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem 1rem 0;
+    }
+
+    .wc-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .wc-logo .trophy { font-size: 2.5rem; animation: bounce 2s ease infinite; }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    header h1 {
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
+
+    header h1 span {
+      background: linear-gradient(90deg, var(--gold), #fff, var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .host-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .host-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.9rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.9rem;
+      transition: var(--ease);
+    }
+
+    .host-badge:hover {
+      transform: scale(1.05);
+      border-color: var(--green);
+      box-shadow: 0 8px 24px rgba(0, 166, 81, 0.3);
+    }
+
+    .host-badge .flag { font-size: 1.25rem; }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3rem;
+    }
+
+    /* 大号倒计时 */
+    .countdown-section {
+      text-align: center;
+      padding: 2rem 0 3rem;
+    }
+
+    .countdown-label {
+      font-size: 1rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-bottom: 1.5rem;
+    }
+
+    .countdown {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: clamp(0.75rem, 3vw, 1.5rem);
+    }
+
+    .cd-block {
+      min-width: clamp(72px, 18vw, 120px);
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 3vw, 1.5rem) clamp(0.75rem, 2vw, 1.25rem);
+      backdrop-filter: blur(10px);
+      transition: var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cd-block::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--green), var(--gold));
+    }
+
+    .cd-block:hover {
+      transform: translateY(-6px) scale(1.03);
+      border-color: var(--green);
+      box-shadow: 0 16px 40px rgba(0, 166, 81, 0.35);
+    }
+
+    .cd-num {
+      font-size: clamp(2.5rem, 10vw, 4.5rem);
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      background: linear-gradient(180deg, #fff 30%, var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      transition: transform 0.3s ease;
+    }
+
+    .cd-block.flip .cd-num {
+      animation: flipNum 0.4s ease;
+    }
+
+    @keyframes flipNum {
+      0% { transform: scaleY(1); }
+      50% { transform: scaleY(0); opacity: 0.5; }
+      100% { transform: scaleY(1); }
+    }
+
+    .cd-unit {
+      font-size: clamp(0.75rem, 2vw, 0.95rem);
+      color: var(--muted);
+      margin-top: 0.5rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+    }
+
+    .kickoff-info {
+      margin-top: 2rem;
+      padding: 1rem 1.5rem;
+      background: linear-gradient(135deg, rgba(0,166,81,0.15), rgba(255,215,0,0.08));
+      border: 1px solid rgba(0, 166, 81, 0.3);
+      border-radius: var(--radius);
+      display: inline-block;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .kickoff-info strong { color: var(--gold); }
+
+    /* 分组国旗 */
+    .groups-section { margin-bottom: 3rem; }
+
+    .sec-title {
+      text-align: center;
+      font-size: clamp(1.3rem, 3vw, 1.75rem);
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+    }
+
+    .sec-sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .groups-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .group-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      transition: var(--ease);
+    }
+
+    .group-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--green);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .group-card h3 {
+      font-size: 1.1rem;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .team-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.45rem 0;
+      transition: var(--ease);
+      border-radius: 8px;
+    }
+
+    .team-row:hover {
+      background: rgba(0, 166, 81, 0.12);
+      padding-left: 0.5rem;
+    }
+
+    .team-flag {
+      font-size: 1.5rem;
+      width: 32px;
+      text-align: center;
+    }
+
+    .team-name {
+      font-size: 0.92rem;
+      font-weight: 500;
+    }
+
+    /* 赛程表 */
+    .schedule-section { margin-bottom: 3rem; }
+
+    .schedule-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tab-btn {
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--ease);
+    }
+
+    .tab-btn:hover, .tab-btn.active {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+    }
+
+    .match-list { display: none; }
+    .match-list.active { display: block; }
+
+    .match-card {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 1rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 0.85rem;
+      transition: var(--ease);
+    }
+
+    .match-card:hover {
+      border-color: var(--green);
+      transform: translateX(4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .match-team {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .match-team.away { flex-direction: row-reverse; text-align: right; }
+
+    .match-team .flag { font-size: 2rem; }
+    .match-team .name { font-weight: 600; font-size: 0.95rem; }
+
+    .match-center {
+      text-align: center;
+      min-width: 100px;
+    }
+
+    .match-time {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .match-vs {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--gold);
+    }
+
+    .match-venue {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    .match-tag {
+      display: inline-block;
+      margin-top: 0.35rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      background: rgba(255, 215, 0, 0.15);
+      color: var(--gold);
+    }
+
+    /* 精彩瞬间 */
+    .highlights {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .hl-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      transition: var(--ease);
+    }
+
+    .hl-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--gold);
+    }
+
+    .hl-card .emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .hl-card h4 { margin-bottom: 0.35rem; }
+    .hl-card p { font-size: 0.85rem; color: var(--muted); }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    footer a { color: var(--green); text-decoration: none; }
+
+    .nav-link-top {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 100;
+      padding: 0.5rem 1rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: var(--ease);
+    }
+
+    .nav-link-top:hover {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    @media (max-width: 640px) {
+      .match-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 0.75rem;
+      }
+      .match-team, .match-team.away {
+        flex-direction: row;
+        justify-content: center;
+        text-align: center;
+      }
+      .highlights { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="pitch-bg" aria-hidden="true"></div>
+  <div class="pitch-lines" aria-hidden="true"></div>
+
+  <a href="kaiyun-sports.html" class="nav-link-top">← 招商页</a>
+
+  <header>
+    <div class="wc-logo">
+      <span class="trophy">🏆</span>
+      <div>
+        <h1><span>FIFA 2026</span> 世界杯</h1>
+        <p style="color:var(--muted);font-size:0.9rem;margin-top:0.25rem;">美国 · 加拿大 · 墨西哥 联合主办</p>
+      </div>
+    </div>
+    <div class="host-badges">
+      <span class="host-badge"><span class="flag">🇺🇸</span> 美国</span>
+      <span class="host-badge"><span class="flag">🇨🇦</span> 加拿大</span>
+      <span class="host-badge"><span class="flag">🇲🇽</span> 墨西哥</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="countdown-section">
+      <p class="countdown-label">距 2026 世界杯开幕还有</p>
+      <div class="countdown" id="countdown">
+        <div class="cd-block" data-unit="days">
+          <div class="cd-num" id="cdDays">000</div>
+          <div class="cd-unit">天 DAYS</div>
+        </div>
+        <div class="cd-block" data-unit="hours">
+          <div class="cd-num" id="cdHours">00</div>
+          <div class="cd-unit">时 HOURS</div>
+        </div>
+        <div class="cd-block" data-unit="minutes">
+          <div class="cd-num" id="cdMinutes">00</div>
+          <div class="cd-unit">分 MINUTES</div>
+        </div>
+        <div class="cd-block" data-unit="seconds">
+          <div class="cd-num" id="cdSeconds">00</div>
+          <div class="cd-unit">秒 SECONDS</div>
+        </div>
+      </div>
+      <div class="kickoff-info">
+        开幕战：<strong>2026 年 6 月 11 日</strong> · 墨西哥城阿兹特克球场 · 全球 48 支球队参赛
+      </div>
+    </section>
+
+    <section class="groups-section">
+      <h2 class="sec-title">🌍 小组球队一览</h2>
+      <p class="sec-sub">国旗 Emoji 展示（示例分组，最终以官方抽签为准）</p>
+      <div class="groups-grid" id="groupsGrid"></div>
+    </section>
+
+    <section class="schedule-section">
+      <h2 class="sec-title">📅 重点赛程</h2>
+      <p class="sec-sub">点击阶段切换查看（示例赛程）</p>
+      <div class="schedule-tabs" id="scheduleTabs">
+        <button class="tab-btn active" data-tab="open">开幕阶段</button>
+        <button class="tab-btn" data-tab="knock">淘汰赛</button>
+        <button class="tab-btn" data-tab="final">决赛周</button>
+      </div>
+      <div class="match-list active" id="tab-open"></div>
+      <div class="match-list" id="tab-knock"></div>
+      <div class="match-list" id="tab-final"></div>
+    </section>
+
+    <section>
+      <h2 class="sec-title">✨ 赛事亮点</h2>
+      <p class="sec-sub">史上首次三国联合举办的世界杯</p>
+      <div class="highlights">
+        <div class="hl-card">
+          <div class="emoji">🌎</div>
+          <h4>48 支球队</h4>
+          <p>扩军至历史最大规模，更多国家参与顶级舞台</p>
+        </div>
+        <div class="hl-card">
+          <div class="emoji">🏟️</div>
+          <h4>16 座球场</h4>
+          <p>横跨北美三国，经典与新地标球场交相辉映</p>
+        </div>
+        <div class="hl-card">
+          <div class="emoji">⚽</div>
+          <h4>104 场比赛</h4>
+          <p>历时 39 天，全球球迷的盛夏狂欢</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 世界杯倒计时页 · 演示模板 · <a href="kaiyun-sports.html">查看开云体育招商页 →</a></p>
+    <p style="margin-top:0.4rem;font-size:0.78rem;opacity:0.7;">倒计时目标：2026-06-11 20:00:00（UTC+8 北京时间）</p>
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+
+      // 开幕时间：2026-06-11 20:00 北京时间 (UTC+8)
+      var KICKOFF = new Date("2026-06-11T20:00:00+08:00").getTime();
+
+      var elDays = document.getElementById("cdDays");
+      var elHours = document.getElementById("cdHours");
+      var elMinutes = document.getElementById("cdMinutes");
+      var elSeconds = document.getElementById("cdSeconds");
+      var prev = { d: "", h: "", m: "", s: "" };
+
+      function pad(n, len) {
+        var s = String(n);
+        while (s.length < len) s = "0" + s;
+        return s;
+      }
+
+      function flip(el, block) {
+        block.classList.add("flip");
+        setTimeout(function () { block.classList.remove("flip"); }, 400);
+      }
+
+      function tick() {
+        var now = Date.now();
+        var diff = Math.max(0, KICKOFF - now);
+
+        if (diff === 0) {
+          elDays.textContent = "000";
+          elHours.textContent = "00";
+          elMinutes.textContent = "00";
+          elSeconds.textContent = "00";
+          return;
+        }
+
+        var sec = Math.floor(diff / 1000);
+        var days = Math.floor(sec / 86400);
+        sec %= 86400;
+        var hours = Math.floor(sec / 3600);
+        sec %= 3600;
+        var mins = Math.floor(sec / 60);
+        var secs = sec % 60;
+
+        var dStr = pad(days, 3);
+        var hStr = pad(hours, 2);
+        var mStr = pad(mins, 2);
+        var sStr = pad(secs, 2);
+
+        if (dStr !== prev.d) {
+          elDays.textContent = dStr;
+          flip(elDays, elDays.closest(".cd-block"));
+          prev.d = dStr;
+        }
+        if (hStr !== prev.h) {
+          elHours.textContent = hStr;
+          flip(elHours, elHours.closest(".cd-block"));
+          prev.h = hStr;
+        }
+        if (mStr !== prev.m) {
+          elMinutes.textContent = mStr;
+          flip(elMinutes, elMinutes.closest(".cd-block"));
+          prev.m = mStr;
+        }
+        if (sStr !== prev.s) {
+          elSeconds.textContent = sStr;
+          flip(elSeconds, elSeconds.closest(".cd-block"));
+          prev.s = sStr;
+        }
+      }
+
+      tick();
+      setInterval(tick, 1000);
+
+      // 飘动国旗装饰
+      var flags = ["🇧🇷", "🇦🇷", "🇩🇪", "🇫🇷", "🇪🇸", "🇮🇹", "🇳🇱", "🇵🇹", "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "🇯🇵", "🇰🇷", "🇺🇸", "🇲🇽", "🇨🇦"];
+      for (var i = 0; i < 12; i++) {
+        var f = document.createElement("div");
+        f.className = "confetti-flag";
+        f.textContent = flags[i % flags.length];
+        f.style.left = Math.random() * 100 + "%";
+        f.style.animationDelay = Math.random() * 20 + "s";
+        f.style.animationDuration = 15 + Math.random() * 15 + "s";
+        document.body.appendChild(f);
+      }
+
+      // 小组数据
+      var groups = {
+        "A 组": [
+          { flag: "🇲🇽", name: "墨西哥" },
+          { flag: "🇿🇦", name: "南非" },
+          { flag: "🇰🇷", name: "韩国" },
+          { flag: "🇪🇺", name: "欧洲附加赛胜者" }
+        ],
+        "B 组": [
+          { flag: "🇨🇦", name: "加拿大" },
+          { flag: "🇨🇭", name: "瑞士" },
+          { flag: "🇶🇦", name: "卡塔尔" },
+          { flag: "🇦🇺", name: "澳大利亚" }
+        ],
+        "C 组": [
+          { flag: "🇧🇷", name: "巴西" },
+          { flag: "🇲🇦", name: "摩洛哥" },
+          { flag: "🇭🇹", name: "海地" },
+          { flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", name: "苏格兰" }
+        ],
+        "D 组": [
+          { flag: "🇺🇸", name: "美国" },
+          { flag: "🇵🇾", name: "巴拉圭" },
+          { flag: "🇦🇺", name: "澳大利亚" },
+          { flag: "🇹🇷", name: "土耳其" }
+        ],
+        "E 组": [
+          { flag: "🇩🇪", name: "德国" },
+          { flag: "🇨🇼", name: "库拉索" },
+          { flag: "🇨🇮", name: "科特迪瓦" },
+          { flag: "🇪🇨", name: "厄瓜多尔" }
+        ],
+        "F 组": [
+          { flag: "🇳🇱", name: "荷兰" },
+          { flag: "🇯🇵", name: "日本" },
+          { flag: "🇪🇺", name: "欧洲附加赛胜者" },
+          { flag: "🇹🇳", name: "突尼斯" }
+        ],
+        "G 组": [
+          { flag: "🇧🇪", name: "比利时" },
+          { flag: "🇪🇬", name: "埃及" },
+          { flag: "🇮🇷", name: "伊朗" },
+          { flag: "🇳🇿", name: "新西兰" }
+        ],
+        "H 组": [
+          { flag: "🇪🇸", name: "西班牙" },
+          { flag: "🇨🇻", name: "佛得角" },
+          { flag: "🇸🇦", name: "沙特阿拉伯" },
+          { flag: "🇺🇾", name: "乌拉圭" }
+        ]
+      };
+
+      var grid = document.getElementById("groupsGrid");
+      Object.keys(groups).forEach(function (gName) {
+        var card = document.createElement("div");
+        card.className = "group-card";
+        var html = "<h3>" + gName + "</h3>";
+        groups[gName].forEach(function (t) {
+          html +=
+            '<div class="team-row"><span class="team-flag">' +
+            t.flag +
+            '</span><span class="team-name">' +
+            t.name +
+            "</span></div>";
+        });
+        card.innerHTML = html;
+        grid.appendChild(card);
+      });
+
+      // 赛程数据
+      var schedules = {
+        open: [
+          {
+            home: { flag: "🇲🇽", name: "墨西哥" },
+            away: { flag: "🇿🇦", name: "南非" },
+            time: "6月11日 20:00",
+            venue: "阿兹特克球场 · 墨西哥城",
+            tag: "开幕战"
+          },
+          {
+            home: { flag: "🇰🇷", name: "韩国" },
+            away: { flag: "🇪🇺", name: "欧洲队" },
+            time: "6月12日 14:00",
+            venue: "阿克伦球场 · 瓜达拉哈拉",
+            tag: "A组"
+          },
+          {
+            home: { flag: "🇨🇦", name: "加拿大" },
+            away: { flag: "🇨🇭", name: "瑞士" },
+            time: "6月13日 03:00",
+            venue: "BMO 球场 · 多伦多",
+            tag: "B组"
+          }
+        ],
+        knock: [
+          {
+            home: { flag: "🇧🇷", name: "巴西" },
+            away: { flag: "🇩🇪", name: "德国" },
+            time: "7月5日 18:00",
+            venue: "大都会球场 · 达拉斯",
+            tag: "16强"
+          },
+          {
+            home: { flag: "🇫🇷", name: "法国" },
+            away: { flag: "🇦🇷", name: "阿根廷" },
+            time: "7月6日 21:00",
+            venue: "硬石球场 · 迈阿密",
+            tag: "16强"
+          },
+          {
+            home: { flag: "🇪🇸", name: "西班牙" },
+            away: { flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", name: "英格兰" },
+            time: "7月7日 17:00",
+            venue: "林肯金融球场 · 费城",
+            tag: "8强"
+          }
+        ],
+        final: [
+          {
+            home: { flag: "🏆", name: "半决赛胜者1" },
+            away: { flag: "🏆", name: "半决赛胜者2" },
+            time: "7月18日 21:00",
+            venue: "亚特兰大梅赛德斯奔驰球场",
+            tag: "半决赛"
+          },
+          {
+            home: { flag: "🥉", name: "季军战" },
+            away: { flag: "🥉", name: "季军战" },
+            time: "7月18日 17:00",
+            venue: "迈阿密硬石球场",
+            tag: "季军赛"
+          },
+          {
+            home: { flag: "🏆", name: "决赛对阵A" },
+            away: { flag: "🏆", name: "决赛对阵B" },
+            time: "7月19日 20:00",
+            venue: "新泽西大都会人寿球场",
+            tag: "🏆 决赛"
+          }
+        ]
+      };
+
+      function renderMatch(m) {
+        return (
+          '<div class="match-card">' +
+          '<div class="match-team home"><span class="flag">' +
+          m.home.flag +
+          '</span><span class="name">' +
+          m.home.name +
+          "</span></div>" +
+          '<div class="match-center"><div class="match-time">' +
+          m.time +
+          '</div><div class="match-vs">VS</div><div class="match-venue">' +
+          m.venue +
+          '</div><span class="match-tag">' +
+          m.tag +
+          "</span></div>" +
+          '<div class="match-team away"><span class="flag">' +
+          m.away.flag +
+          '</span><span class="name">' +
+          m.away.name +
+          "</span></div></div>"
+        );
+      }
+
+      Object.keys(schedules).forEach(function (key) {
+        var container = document.getElementById("tab-" + key);
+        schedules[key].forEach(function (m) {
+          container.innerHTML += renderMatch(m);
+        });
+      });
+
+      document.getElementById("scheduleTabs").addEventListener("click", function (e) {
+        var btn = e.target.closest(".tab-btn");
+        if (!btn) return;
+        var tab = btn.getAttribute("data-tab");
+        document.querySelectorAll(".tab-btn").forEach(function (b) {
+          b.classList.toggle("active", b === btn);
+        });
+        document.querySelectorAll(".match-list").forEach(function (list) {
+          list.classList.toggle("active", list.id === "tab-" + tab);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

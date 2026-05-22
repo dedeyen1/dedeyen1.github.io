@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="开云体育官方招商合作 — 高返佣、全渠道支持、7×24专属客服" />
+  <title>开云体育 · 官方招商合作</title>
+  <style>
+    :root {
+      --bg-dark: #0a1628;
+      --bg-mid: #0d2847;
+      --bg-deep: #051018;
+      --gold: #f5c518;
+      --gold-light: #ffe566;
+      --cyan: #00d4aa;
+      --blue: #1e90ff;
+      --red: #e63946;
+      --text: #f0f4f8;
+      --muted: #8ba3be;
+      --card: rgba(255, 255, 255, 0.05);
+      --border: rgba(245, 197, 24, 0.2);
+      --radius: 18px;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      --ease: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg-deep);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(30, 144, 255, 0.25), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 50%, rgba(0, 212, 170, 0.12), transparent),
+        radial-gradient(ellipse 50% 50% at 0% 80%, rgba(245, 197, 24, 0.1), transparent),
+        linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-mid) 50%, var(--bg-deep) 100%);
+    }
+
+    .grid-lines {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black, transparent);
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      background: rgba(5, 16, 24, 0.7);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      transition: var(--ease);
+    }
+
+    .navbar.scrolled { box-shadow: var(--shadow); padding: 0.7rem 1.5rem; }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--gold), #e67e22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #0a1628;
+    }
+
+    .brand span {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .brand em {
+      font-style: normal;
+      color: var(--gold);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.75rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: var(--ease);
+    }
+
+    .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+
+    .btn-cta-nav {
+      padding: 0.55rem 1.25rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--gold), #e67e22);
+      color: #0a1628;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: var(--ease);
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-cta-nav:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(245, 197, 24, 0.45);
+    }
+
+    .menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 5.5rem 1.25rem 3rem;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 3rem 0 4rem;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      background: rgba(245, 197, 24, 0.12);
+      border: 1px solid var(--border);
+      color: var(--gold);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.7s ease forwards;
+    }
+
+    .hero-tag::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--cyan);
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5.5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 1rem;
+      animation: fadeUp 0.7s ease 0.1s forwards;
+      opacity: 0;
+    }
+
+    .hero h1 .gold { color: var(--gold); }
+    .hero h1 .cyan { color: var(--cyan); }
+
+    .hero-desc {
+      max-width: 640px;
+      margin: 0 auto 2rem;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.1rem);
+      animation: fadeUp 0.7s ease 0.2s forwards;
+      opacity: 0;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      animation: fadeUp 0.7s ease 0.3s forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.9rem 1.8rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: var(--ease);
+      font-family: inherit;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), #e67e22);
+      color: #0a1628;
+      box-shadow: 0 10px 30px rgba(245, 197, 24, 0.35);
+    }
+
+    .btn-gold:hover { transform: translateY(-4px); box-shadow: 0 14px 40px rgba(245, 197, 24, 0.5); }
+
+    .btn-ghost {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover { border-color: var(--gold); transform: translateY(-4px); }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-top: 3.5rem;
+    }
+
+    .metric {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      transition: var(--ease);
+    }
+
+    .metric:hover {
+      transform: translateY(-6px);
+      border-color: var(--gold);
+      box-shadow: var(--shadow);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 1.75rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .metric span { font-size: 0.85rem; color: var(--muted); }
+
+    /* Sections */
+    section { margin-bottom: 4.5rem; }
+
+    .sec-head {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .sec-head h2 {
+      font-size: clamp(1.6rem, 4vw, 2.1rem);
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .sec-head h2 em {
+      font-style: normal;
+      color: var(--gold);
+    }
+
+    .sec-head p { color: var(--muted); }
+
+    /* Intro */
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .intro-visual {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, rgba(30,144,255,0.2), rgba(0,212,170,0.15));
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      transition: var(--ease);
+    }
+
+    .intro-visual:hover { transform: scale(1.02); }
+
+    .intro-visual .badge-float {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+      background: rgba(5, 16, 24, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      text-align: left;
+    }
+
+    .intro-text h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--gold);
+    }
+
+    .intro-text p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .intro-list {
+      list-style: none;
+    }
+
+    .intro-list li {
+      padding: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+      color: var(--text);
+    }
+
+    .intro-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    /* Advantages */
+    .adv-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .adv-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      transition: var(--ease);
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    .adv-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .adv-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(245, 197, 24, 0.5);
+      box-shadow: var(--shadow);
+    }
+
+    .adv-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, rgba(245,197,24,0.2), rgba(0,212,170,0.15));
+    }
+
+    .adv-card h3 { font-size: 1.15rem; margin-bottom: 0.5rem; }
+    .adv-card p { color: var(--muted); font-size: 0.92rem; }
+
+    /* Plan */
+    .plan-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .plan-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      transition: var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .plan-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--gold), var(--cyan));
+      transform: scaleX(0);
+      transition: var(--ease);
+    }
+
+    .plan-card:hover::before { transform: scaleX(1); }
+
+    .plan-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--gold);
+      box-shadow: var(--shadow);
+    }
+
+    .plan-card.featured {
+      border-color: var(--gold);
+      background: linear-gradient(180deg, rgba(245,197,24,0.08), var(--card));
+    }
+
+    .plan-card .plan-label {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: rgba(245, 197, 24, 0.2);
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .plan-card h3 { font-size: 1.3rem; margin-bottom: 0.5rem; }
+
+    .plan-rate {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--gold);
+      margin: 1rem 0;
+    }
+
+    .plan-rate small { font-size: 1rem; color: var(--muted); font-weight: 500; }
+
+    .plan-features {
+      list-style: none;
+      text-align: left;
+      margin: 1.25rem 0;
+    }
+
+    .plan-features li {
+      padding: 0.4rem 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* Process */
+    .process {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      position: relative;
+    }
+
+    .process::before {
+      content: "";
+      position: absolute;
+      top: 28px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), var(--cyan));
+      opacity: 0.3;
+    }
+
+    .step {
+      flex: 1;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-num {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), #e67e22);
+      color: #0a1628;
+      font-weight: 800;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--ease);
+    }
+
+    .step:hover .step-num { transform: scale(1.1); box-shadow: 0 8px 24px rgba(245,197,24,0.4); }
+
+    .step h4 { font-size: 1rem; margin-bottom: 0.35rem; }
+    .step p { font-size: 0.82rem; color: var(--muted); }
+
+    /* Contact */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 2rem;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.25rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: var(--ease);
+    }
+
+    .contact-item:hover {
+      border-color: var(--gold);
+      transform: translateX(6px);
+    }
+
+    .contact-item .ci-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(245, 197, 24, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .contact-item h4 { font-size: 0.95rem; margin-bottom: 0.2rem; }
+    .contact-item p { color: var(--muted); font-size: 0.9rem; }
+    .contact-item a { color: var(--cyan); text-decoration: none; }
+    .contact-item a:hover { text-decoration: underline; }
+
+    .contact-form {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      transition: var(--ease);
+    }
+
+    .contact-form:hover { box-shadow: var(--shadow); }
+
+    .form-row { margin-bottom: 1.1rem; }
+
+    .form-row label {
+      display: block;
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .form-row input,
+    .form-row select,
+    .form-row textarea {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1rem;
+      transition: var(--ease);
+    }
+
+    .form-row input:focus,
+    .form-row select:focus,
+    .form-row textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.2);
+    }
+
+    .form-row textarea { min-height: 100px; resize: vertical; }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: linear-gradient(135deg, var(--gold), #e67e22);
+      color: #0a1628;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 700;
+      z-index: 2000;
+      opacity: 0;
+      transition: var(--ease);
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    footer a { color: var(--gold); text-decoration: none; }
+
+    .back-top {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), #e67e22);
+      color: #0a1628;
+      border: none;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--ease);
+      z-index: 999;
+    }
+
+    .back-top.show { opacity: 1; visibility: visible; }
+    .back-top:hover { transform: translateY(-4px); }
+
+    @media (max-width: 900px) {
+      .hero-metrics { grid-template-columns: repeat(2, 1fr); }
+      .intro-grid, .contact-grid { grid-template-columns: 1fr; }
+      .adv-grid, .plan-grid { grid-template-columns: 1fr; }
+      .process { flex-direction: column; gap: 1.5rem; }
+      .process::before { display: none; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        position: fixed;
+        top: 65px; left: 0; right: 0;
+        flex-direction: column;
+        background: rgba(5, 16, 24, 0.98);
+        padding: 1.25rem;
+        gap: 1rem;
+        transform: translateY(-120%);
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--ease);
+        border-bottom: 1px solid var(--border);
+      }
+      .nav-links.open { transform: translateY(0); opacity: 1; visibility: visible; }
+      .menu-btn { display: block; }
+      .btn-cta-nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-layer" aria-hidden="true"></div>
+  <div class="grid-lines" aria-hidden="true"></div>
+
+  <nav class="navbar" id="navbar">
+    <a href="#" class="brand">
+      <div class="brand-icon">K</div>
+      <span>开云<em>体育</em></span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#intro" class="active">招商介绍</a></li>
+      <li><a href="#advantages">合作优势</a></li>
+      <li><a href="#plans">佣金方案</a></li>
+      <li><a href="#process">合作流程</a></li>
+      <li><a href="#contact">联系方式</a></li>
+    </ul>
+    <a href="#contact" class="btn-cta-nav">立即加盟</a>
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="菜单">☰</button>
+  </nav>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="hero-tag">官方直招 · 2026 年度合伙人计划开启</div>
+      <h1>开云体育 <span class="gold">招商合作</span><br />共创<span class="cyan">亿万流量</span>市场</h1>
+      <p class="hero-desc">
+        亚洲领先体育娱乐平台，覆盖足球、篮球、电竞等全品类赛事。
+        高佣金结算、专属推广素材、7×24 商务团队一对一扶持，助您快速开拓市场。
+      </p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-gold">立即申请加盟 →</a>
+        <a href="#advantages" class="btn btn-ghost">了解合作优势</a>
+      </div>
+      <div class="hero-metrics">
+        <div class="metric">
+          <strong>55%</strong>
+          <span>最高佣金比例</span>
+        </div>
+        <div class="metric">
+          <strong>500万+</strong>
+          <span>注册活跃用户</span>
+        </div>
+        <div class="metric">
+          <strong>15分钟</strong>
+          <span>平均到账速度</span>
+        </div>
+        <div class="metric">
+          <strong>7×24</strong>
+          <span>专属客服支持</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="intro">
+      <div class="sec-head">
+        <h2>招商<em>介绍</em></h2>
+        <p>品牌实力背书，助力合作伙伴持续盈利</p>
+      </div>
+      <div class="intro-grid">
+        <div class="intro-visual">
+          ⚽
+          <div class="badge-float">
+            <strong>🏆 十年品牌沉淀</strong><br />
+            国际赛事全覆盖 · 多终端无缝体验 · 资金安全有保障
+          </div>
+        </div>
+        <div class="intro-text">
+          <h3>为什么选择开云体育？</h3>
+          <p>
+            开云体育深耕亚洲市场十余年，拥有成熟的技术团队与合规运营体系。
+            我们为代理商提供从引流、转化到留存的全链路工具支持。
+          </p>
+          <p>
+            无论您是自媒体、社群运营、线下渠道还是流量平台，
+            均可获得定制化推广方案与有竞争力的分成政策。
+          </p>
+          <ul class="intro-list">
+            <li>零门槛加盟，快速开通代理后台</li>
+            <li>实时数据看板，佣金透明可查</li>
+            <li>海量高清素材，一键下载即用</li>
+            <li>多币种结算，灵活提现通道</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="advantages">
+      <div class="sec-head">
+        <h2>合作<em>优势</em></h2>
+        <p>六大核心竞争力，让您赢在起跑线</p>
+      </div>
+      <div class="adv-grid">
+        <article class="adv-card">
+          <div class="adv-icon">💰</div>
+          <h3>行业顶级返佣</h3>
+          <p>阶梯式佣金体系，业绩越高比例越高，月度额外奖励上不封顶。</p>
+        </article>
+        <article class="adv-card">
+          <div class="adv-icon">📊</div>
+          <h3>智能数据后台</h3>
+          <p>注册、活跃、充值、留存全维度报表，手机端随时掌控业绩。</p>
+        </article>
+        <article class="adv-card">
+          <div class="adv-icon">🎨</div>
+          <h3>专业推广素材</h3>
+          <p>Banner、短视频、文案模板每周更新，多语言多尺寸适配各渠道。</p>
+        </article>
+        <article class="adv-card">
+          <div class="adv-icon">🔒</div>
+          <h3>资金安全保障</h3>
+          <p>独立财务系统，佣金日结周提，大额提现专属通道极速到账。</p>
+        </article>
+        <article class="adv-card">
+          <div class="adv-icon">🌍</div>
+          <h3>全球赛事覆盖</h3>
+          <p>英超、西甲、NBA、欧冠、世界杯等热门赛事 7×24 不间断开盘。</p>
+        </article>
+        <article class="adv-card">
+          <div class="adv-icon">👨‍💼</div>
+          <h3>一对一商务经理</h3>
+          <p>签约即分配专属经理，策略指导、活动申请、问题处理全程跟进。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="plans">
+      <div class="sec-head">
+        <h2>佣金<em>方案</em></h2>
+        <p>透明分成机制，多档位灵活选择</p>
+      </div>
+      <div class="plan-grid">
+        <div class="plan-card">
+          <span class="plan-label">入门代理</span>
+          <h3>银牌伙伴</h3>
+          <div class="plan-rate">35<small>% 起</small></div>
+          <ul class="plan-features">
+            <li>✓ 基础推广素材包</li>
+            <li>✓ 周结佣金提现</li>
+            <li>✓ 在线客服支持</li>
+            <li>✓ 新手培训文档</li>
+          </ul>
+          <a href="#contact" class="btn btn-ghost" style="width:100%;justify-content:center;">申请银牌</a>
+        </div>
+        <div class="plan-card featured">
+          <span class="plan-label">🔥 最受欢迎</span>
+          <h3>金牌伙伴</h3>
+          <div class="plan-rate">45<small>% 起</small></div>
+          <ul class="plan-features">
+            <li>✓ 全套定制素材</li>
+            <li>✓ 日结 + 周提双通道</li>
+            <li>✓ 专属商务经理</li>
+            <li>✓ 线下活动赞助申请</li>
+            <li>✓ 子代理分销权限</li>
+          </ul>
+          <a href="#contact" class="btn btn-gold" style="width:100%;justify-content:center;">申请金牌</a>
+        </div>
+        <div class="plan-card">
+          <span class="plan-label">顶级代理</span>
+          <h3>钻石伙伴</h3>
+          <div class="plan-rate">55<small>% 起</small></div>
+          <ul class="plan-features">
+            <li>✓ 品牌联合推广</li>
+            <li>✓ 实时日结到账</li>
+            <li>✓ VIP 专属通道</li>
+            <li>✓ 区域独家授权洽谈</li>
+            <li>✓ 年度分红奖励</li>
+          </ul>
+          <a href="#contact" class="btn btn-ghost" style="width:100%;justify-content:center;">申请钻石</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="process">
+      <div class="sec-head">
+        <h2>合作<em>流程</em></h2>
+        <p>四步完成加盟，最快当日开通</p>
+      </div>
+      <div class="process">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h4>提交申请</h4>
+          <p>填写联系方式与渠道类型</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h4>资质审核</h4>
+          <p>商务经理 1 小时内联系</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h4>签约开户</h4>
+          <p>获取后台账号与推广链接</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <h4>正式推广</h4>
+          <p>开始赚取佣金收益</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="sec-head">
+        <h2>联系<em>方式</em></h2>
+        <p>留下您的信息，招商经理将第一时间与您联系</p>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div class="contact-item">
+            <div class="ci-icon">💬</div>
+            <div>
+              <h4>Telegram 官方招商</h4>
+              <p><a href="#">@KaiyunSports_Official</a>（示例，请替换为真实账号）</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="ci-icon">📧</div>
+            <div>
+              <h4>商务邮箱</h4>
+              <p><a href="mailto:partner@example.com">partner@example.com</a></p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="ci-icon">📱</div>
+            <div>
+              <h4>微信招商专线</h4>
+              <p>Kaiyun_Sports_2026（示例）</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="ci-icon">⏰</div>
+            <div>
+              <h4>服务时间</h4>
+              <p>全年无休 7×24 小时在线响应</p>
+            </div>
+          </div>
+        </div>
+        <form class="contact-form" id="joinForm">
+          <div class="form-row">
+            <label for="cname">您的称呼</label>
+            <input type="text" id="cname" placeholder="请输入姓名或昵称" required />
+          </div>
+          <div class="form-row">
+            <label for="ccontact">联系方式</label>
+            <input type="text" id="ccontact" placeholder="Telegram / 微信 / 邮箱" required />
+          </div>
+          <div class="form-row">
+            <label for="ctype">渠道类型</label>
+            <select id="ctype" required>
+              <option value="">请选择</option>
+              <option>自媒体 / 短视频</option>
+              <option>社群 / 私域流量</option>
+              <option>线下推广</option>
+              <option>网站 / SEO 流量</option>
+              <option>其他</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="cmsg">补充说明（选填）</label>
+            <textarea id="cmsg" placeholder="简要描述您的推广资源与预期…"></textarea>
+          </div>
+          <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;">提交加盟申请 🚀</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 开云体育招商合作页 · 演示模板 · <a href="world-cup-countdown.html">查看世界杯倒计时页 →</a></p>
+    <p style="margin-top:0.5rem;font-size:0.8rem;opacity:0.7;">本页面为前端展示模板，联系方式与数据请自行替换为真实信息。</p>
+  </footer>
+
+  <button class="back-top" id="backTop" type="button" aria-label="回到顶部">↑</button>
+  <div class="toast" id="toast">申请已提交！招商经理将尽快联系您 ✅</div>
+
+  <script>
+    (function () {
+      var navbar = document.getElementById("navbar");
+      var backTop = document.getElementById("backTop");
+      var menuBtn = document.getElementById("menuBtn");
+      var navLinks = document.getElementById("navLinks");
+      var toast = document.getElementById("toast");
+
+      window.addEventListener("scroll", function () {
+        navbar.classList.toggle("scrolled", window.scrollY > 40);
+        backTop.classList.toggle("show", window.scrollY > 400);
+      });
+
+      backTop.addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      menuBtn.addEventListener("click", function () {
+        navLinks.classList.toggle("open");
+      });
+
+      navLinks.querySelectorAll("a").forEach(function (a) {
+        a.addEventListener("click", function () {
+          navLinks.classList.remove("open");
+        });
+      });
+
+      var sections = document.querySelectorAll("section[id]");
+      var anchors = document.querySelectorAll(".nav-links a");
+
+      window.addEventListener("scroll", function () {
+        var y = window.scrollY + 100;
+        sections.forEach(function (sec) {
+          if (y >= sec.offsetTop && y < sec.offsetTop + sec.offsetHeight) {
+            var id = sec.id;
+            anchors.forEach(function (a) {
+              a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+            });
+          }
+        });
+      });
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add("visible");
+            observer.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      document.querySelectorAll(".adv-card").forEach(function (c) {
+        observer.observe(c);
+      });
+
+      document.getElementById("joinForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        toast.classList.add("show");
+        this.reset();
+        setTimeout(function () { toast.classList.remove("show"); }, 3200);
+      });
+    })();
+  </script>
+</body>
+</html>
